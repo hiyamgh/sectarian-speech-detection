@@ -1,0 +1,527 @@
+=========================================================== annotated ===========================================================
+
+UNDER refugee ////////////////////////////////////////////////////////
+
+EVENT الدورة البوشرية السوريين
+offensive - 54
+none - 25
+offensive, incitement - 49
+offensive, accusation - 16
+
+
+EVENT نصر الله ترحيل اللاجئين عبر البحر
+offensive, accusation - 16
+offensive - 6
+offensive, incitement - 3
+
+
+EVENT أطفال بركة سمير قصير
+offensive - 30
+offensive, incitement - 5
+offensive, accusation - 4
+none - 3
+
+
+////////////////////////////////////////////////////////
+
+UNDER gender ////////////////////////////////////////////////////////
+
+EVENT زينب زعيتر
+offensive, accusation - 7
+none - 14
+offensive, incitement - 16
+offensive - 22
+
+
+EVENT سعد الحريري مضيفتان
+none - 4
+offensive - 4
+offensive, accusation - 2
+offensive, incitement - 1
+
+
+EVENT لينا ناصر الدين السم الاسيد بلدة البساتين
+none - 10
+offensive - 5
+offensive, incitement - 15
+offensive, accusation - 4
+
+
+EVENT صيدا مايو صيدا بيكيني
+offensive, incitement - 14
+none - 13
+offensive - 9
+offensive, accusation - 4
+
+
+EVENT الزواج المبكر مجلس النواب
+offensive - 5
+offensive, accusation - 4
+offensive, incitement - 2
+
+
+EVENT قانون موحد أحوال شخصية 
+offensive, incitement - 3
+offensive - 3
+offensive, accusation - 2
+
+
+EVENT منصور لبكي
+offensive - 18
+none - 3
+offensive, accusation - 4
+offensive, incitement - 26
+
+
+////////////////////////////////////////////////////////
+
+UNDER politics and security ////////////////////////////////////////////////////////
+
+EVENT عين الحلوة
+none - 78
+offensive - 96
+offensive, accusation - 19
+offensive, incitement - 8
+
+
+EVENT طوفان الأقصى 
+offensive - 1733
+none - 636
+offensive, accusation - 676
+offensive, incitement - 105
+
+
+EVENT ليال الاختيار أفيخاي أدرعي
+none - 20
+offensive - 75
+offensive, accusation - 50
+offensive, incitement - 6
+
+
+EVENT جهاد أزعور
+offensive - 24
+offensive, accusation - 16
+none - 11
+offensive, incitement - 1
+
+
+EVENT الكحالة  فادي بجاني
+none - 13
+offensive - 30
+offensive, accusation - 40
+offensive, incitement - 6
+
+
+EVENT تأجيل انتخابات البلدية
+offensive, accusation - 2
+
+
+EVENT جريمة بشري بشري طوق
+none - 25
+offensive - 19
+offensive, incitement - 13
+offensive, accusation - 6
+
+
+EVENT حزب الله فرنجية
+none - 7
+offensive - 10
+offensive, accusation - 9
+
+
+////////////////////////////////////////////////////////
+
+UNDER sexuality ////////////////////////////////////////////////////////
+
+EVENT حسن نصرالله المثلية
+none - 24
+offensive, incitement - 32
+offensive - 17
+offensive, accusation - 5
+
+
+EVENT حسن مرعب مقاطعة قناة الشذوذ
+offensive, incitement - 13
+none - 8
+offensive - 6
+offensive, accusation - 5
+
+
+EVENT جنود الرب الجميزة
+none - 6
+offensive - 17
+offensive, incitement - 105
+offensive, accusation - 8
+
+
+EVENT حسن مرعب الشذوذ الجنسي
+offensive - 9
+none - 1
+offensive, accusation - 1
+
+
+EVENT مسيرة الحريات رياض الصلح
+none - 8
+offensive, incitement - 85
+offensive - 33
+offensive, accusation - 4
+
+
+////////////////////////////////////////////////////////
+
+UNDER corruption ////////////////////////////////////////////////////////
+
+EVENT وزير الداخلية ملاحقة اللواء عماد عثمان
+offensive - 82
+offensive, accusation - 55
+none - 20
+offensive, incitement - 6
+
+
+EVENT غسان عويدات إثراء غير مشروع
+offensive, accusation - 11
+offensive - 3
+none - 4
+
+
+EVENT المنصوري مصرف لبنان
+offensive - 48
+offensive, accusation - 23
+none - 16
+offensive, incitement - 1
+
+
+EVENT التدقيق الجنائي
+offensive, accusation - 29
+none - 10
+offensive - 31
+offensive, incitement - 1
+
+
+EVENT غسان عويدات بيطار
+offensive - 47
+offensive, accusation - 26
+none - 17
+offensive, incitement - 4
+
+
+EVENT حمية تلزيم المطار
+none - 2
+offensive - 7
+offensive, incitement - 2
+offensive, accusation - 6
+
+
+EVENT توسيع المطار ميقاتي صفقة المطار ميقاتي
+offensive, accusation - 11
+offensive - 13
+none - 8
+
+
+////////////////////////////////////////////////////////
+
+UNDER religion ////////////////////////////////////////////////////////
+
+EVENT جونية Pub رسم المسيح جونية حانة رسم المسيح
+offensive - 14
+offensive, incitement - 3
+none - 8
+
+
+EVENT تعلم اللغة الشيعية محمد الدايخ حسين قاووق
+offensive - 17
+none - 7
+offensive, incitement - 4
+offensive, accusation - 1
+
+
+EVENT مي شدياق الكحول
+none - 5
+offensive - 17
+offensive, accusation - 3
+offensive, incitement - 1
+
+
+EVENT حسن مرعب التوقيت الصيفي
+offensive - 21
+none - 18
+offensive, accusation - 7
+
+
+EVENT الكوميدي نورحجار
+offensive - 28
+none - 17
+offensive, accusation - 3
+offensive, incitement - 7
+
+
+////////////////////////////////////////////////////////
+
+======================================================================================================================
+
+=========================================================== served ===========================================================
+
+UNDER refugee ////////////////////////////////////////////////////////
+
+EVENT الدورة البوشرية السوريين
+offensive - 216
+offensive, accusation - 37
+none - 75
+offensive, incitement - 34
+incitement - 1
+
+
+EVENT نصر الله ترحيل اللاجئين عبر البحر
+offensive, accusation - 59
+none - 44
+offensive, incitement - 21
+offensive - 189
+
+
+EVENT أطفال بركة سمير قصير
+offensive - 87
+offensive, incitement - 3
+none - 9
+offensive, accusation - 6
+
+
+////////////////////////////////////////////////////////
+
+UNDER gender ////////////////////////////////////////////////////////
+
+EVENT زينب زعيتر
+offensive - 118
+offensive, accusation - 17
+none - 46
+offensive, incitement - 24
+
+
+EVENT سعد الحريري مضيفتان
+offensive - 96
+offensive, accusation - 35
+none - 30
+offensive, incitement - 18
+
+
+EVENT لينا ناصر الدين السم الاسيد بلدة البساتين
+offensive - 150
+none - 81
+offensive, accusation - 27
+offensive, incitement - 56
+
+
+EVENT صيدا مايو صيدا بيكيني
+none - 133
+offensive - 542
+offensive, accusation - 65
+offensive, incitement - 80
+
+
+EVENT الزواج المبكر مجلس النواب
+offensive - 127
+offensive, incitement - 12
+offensive, accusation - 1
+none - 5
+
+
+EVENT قانون موحد أحوال شخصية 
+offensive - 55
+offensive, accusation - 4
+none - 12
+offensive, incitement - 4
+
+
+EVENT منصور لبكي
+offensive - 2371
+offensive, incitement - 257
+offensive, accusation - 206
+none - 640
+
+
+////////////////////////////////////////////////////////
+
+UNDER politics and security ////////////////////////////////////////////////////////
+
+EVENT طوفان الأقصى 
+offensive - 4675
+offensive, incitement - 168
+none - 928
+offensive, accusation - 613
+
+
+EVENT جهاد أزعور
+offensive - 144
+none - 37
+offensive, accusation - 34
+offensive, incitement - 1
+
+
+EVENT الكحالة  فادي بجاني
+offensive - 1756
+offensive, accusation - 228
+none - 219
+offensive, incitement - 66
+
+
+EVENT تأجيل انتخابات البلدية
+offensive - 38
+offensive, accusation - 4
+none - 22
+
+
+EVENT جريمة بشري بشري طوق
+offensive - 120
+none - 61
+offensive, incitement - 14
+offensive, accusation - 5
+
+
+EVENT حزب الله فرنجية
+offensive - 127
+none - 18
+offensive, accusation - 32
+offensive, incitement - 2
+
+
+EVENT عين الحلوة
+offensive - 59
+offensive, incitement - 2
+none - 17
+offensive, accusation - 5
+
+
+EVENT ليال الاختيار أفيخاي أدرعي
+none - 18
+offensive - 42
+offensive, incitement - 5
+offensive, accusation - 20
+
+
+////////////////////////////////////////////////////////
+
+UNDER sexuality ////////////////////////////////////////////////////////
+
+EVENT حسن نصرالله المثلية
+offensive, incitement - 106
+offensive - 360
+none - 282
+offensive, accusation - 33
+
+
+EVENT حسن مرعب مقاطعة قناة الشذوذ
+offensive, incitement - 68
+offensive - 126
+none - 156
+offensive, accusation - 22
+
+
+EVENT جنود الرب الجميزة
+offensive, incitement - 665
+none - 673
+offensive - 955
+offensive, accusation - 94
+
+
+EVENT حسن مرعب الشذوذ الجنسي
+offensive - 46
+offensive, accusation - 18
+none - 12
+offensive, incitement - 3
+
+
+EVENT مسيرة الحريات رياض الصلح
+offensive - 530
+none - 89
+offensive, incitement - 111
+offensive, accusation - 35
+
+
+////////////////////////////////////////////////////////
+
+UNDER corruption ////////////////////////////////////////////////////////
+
+EVENT غسان عويدات بيطار
+offensive - 70
+none - 15
+offensive, accusation - 18
+offensive, incitement - 6
+
+
+EVENT وزير الداخلية ملاحقة اللواء عماد عثمان
+offensive - 198
+none - 29
+offensive, accusation - 52
+offensive, incitement - 9
+
+
+EVENT المنصوري مصرف لبنان
+offensive, accusation - 11
+offensive - 42
+none - 16
+
+
+EVENT التدقيق الجنائي
+offensive - 27
+none - 11
+offensive, accusation - 6
+offensive, incitement - 1
+
+
+EVENT حمية تلزيم المطار
+offensive - 68
+none - 16
+offensive, accusation - 16
+offensive, incitement - 2
+
+
+EVENT توسيع المطار ميقاتي صفقة المطار ميقاتي
+offensive, accusation - 31
+offensive - 87
+none - 21
+offensive, incitement - 7
+offensive, accusation, incitement - 1
+
+
+////////////////////////////////////////////////////////
+
+UNDER religion ////////////////////////////////////////////////////////
+
+EVENT جونية Pub رسم المسيح جونية حانة رسم المسيح
+offensive - 38
+offensive, accusation - 4
+offensive, incitement - 2
+none - 4
+
+
+EVENT تعلم اللغة الشيعية محمد الدايخ حسين قاووق
+offensive - 697
+none - 176
+offensive, incitement - 48
+offensive, accusation - 33
+
+
+EVENT مي شدياق الكحول
+offensive - 1089
+offensive, incitement - 40
+none - 164
+offensive, accusation - 68
+
+
+EVENT حسن مرعب التوقيت الصيفي
+offensive - 342
+none - 65
+offensive, accusation - 35
+offensive, incitement - 8
+
+
+EVENT الكوميدي نورحجار
+none - 115
+offensive - 551
+offensive, incitement - 33
+offensive, accusation - 57
+
+
+////////////////////////////////////////////////////////
+
+======================================================================================================================
+
