@@ -9,6 +9,7 @@ from tqdm import tqdm
 import os
 import matplotlib.patches as mpatches
 import re
+import pickle
 
 font_family = "Arial"  # Change this to "Helvetica" if you prefer Helvetica
 plt.rcParams['font.family'] = font_family
@@ -54,6 +55,11 @@ def unique_list(l):
     return ulist
 
 
+def wrap_text(text, max_words=4):
+    words = text.split()
+    return '\n'.join([' '.join(words[i:i + max_words]) for i in range(0, len(words), max_words)])
+
+
 evenetnames2shorteventnames = {
     "المجلس التأديبي غادة عون طرد تأديبي غادة عون": "المجلس التأديبي غادة عون طرد",
     "توسيع المطار ميقاتي صفقة المطار ميقاتي": "صفقة المطار ميقاتي",
@@ -70,6 +76,9 @@ evenetnames2shorteventnames = {
 en2ar = {v: k for k, v in ar2en.items()}
 
 df_selected = pd.read_excel('2023-Selected.xlsx')
+
+with open('event_translations.pkl', 'rb') as f:
+    translations = pickle.load(f)
 
 dates = list(df_selected['التاريخ'])[:35]
 dates_new = []
@@ -94,7 +103,8 @@ for n in names:
         names_mod = evenetnames2shorteventnames[names_mod]
 
     names_mod = ' '.join(unique_list(names_mod.split()))
-    names_new.append(names_mod)
+    # names_new.append(names_mod)
+    names_new.append(translations[names_mod])
 
 # names = names_new
 
@@ -262,11 +272,17 @@ for LABEL in ['annotated', 'served']:
                 print(bars)
                 legend_labels.append(bars[0])  # Add the first bar of each plot to the legend labels
                 # axes[row, col].bar(labels, counts, color=colors)
-                axes[row, col].set_title(f'{get_display(arabic_reshaper.reshape(dictionary[event_id]))}',
-                                         fontsize='small',
+                # axes[row, col].set_title(f'{get_display(arabic_reshaper.reshape(dictionary[event_id]))}',
+                #                          fontsize='small',
+                #                          fontweight='bold',
+                #                          # pad=15,
+                #                          y=1.0001)  # Adjust the pad parameter for title spacing
+                axes[row, col].set_title(f'{wrap_text(dictionary[event_id], max_words=3)}',
+                                         fontsize='x-small',
                                          fontweight='bold',
                                          # pad=15,
                                          y=1.0001)  # Adjust the pad parameter for title spacing
+
                 # axes[row, col].set_ylabel('Count')
 
                 # # Adjust x-axis ticks
@@ -334,7 +350,9 @@ for LABEL in ['annotated', 'served']:
                 plt.subplots_adjust(hspace=hspace_factor / nrows, wspace=0.6, top=6)
             # plt.subplots_adjust(hspace=1.01, top=0.9, bottom=0.15)  # Increase the top parameter
 
-            save_dir2 = '../paper_plots/serving_barplots/'
+            # save_dir2 = '../paper_plots/serving_barplots/'
+            save_dir2 = '../paper_plots_stephanie/serving_barplots/'
+
             if not os.path.exists(save_dir2):
                 os.makedirs(save_dir2)
 

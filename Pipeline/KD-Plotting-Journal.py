@@ -11,6 +11,7 @@ import seaborn as sns
 import random
 from tqdm import tqdm
 import re
+import pickle
 
 font_family = "Arial"  # Change this to "Helvetica" if you prefer Helvetica
 plt.rcParams['font.family'] = font_family
@@ -65,7 +66,7 @@ evenetnames2shorteventnames = {
 }
 
 
-def plot_volume(categories2volumes, add_slabs=False, add_regions=False):
+def plot_volume(categories2volumes, add_slabs=False, add_regions=False, plot_in_arabic=True):
     weeks_temp = list(categories2volumes['corruption'].keys())
     legend_handles = []
     legend_labels = []
@@ -103,30 +104,58 @@ def plot_volume(categories2volumes, add_slabs=False, add_regions=False):
                         if len(events) > 1:
                             y_values = np.linspace(y_max_curr/20, y_max_curr - y_max_curr/20, len(events)) # Distribute markers evenly from ymin to ymax
                             for k, y in enumerate(y_values):
-                                thescatter = plt.scatter(x, y, color='red', marker=f'${j}$',
-                                            s=20,
-                                            linewidths=0.5,
-                                            label=get_display(arabic_reshaper.reshape(
-                                                selected[category][yw][k].replace("\"", "").strip())),
-                                            zorder=3)
-                                # LEGEND_ONLY_LABELS.append(thescatter)
 
-                                j += 1
-                                events_list[weeks.index(w)] += selected[category][yw][k].replace("\"", "").strip() + ";\n"
+                                if plot_in_arabic:
+                                    thescatter = plt.scatter(x, y, color='red', marker=f'${j}$',
+                                                s=20,
+                                                linewidths=0.5,
+                                                label=get_display(arabic_reshaper.reshape(
+                                                    selected[category][yw][k].replace("\"", "").strip())),
+                                                zorder=3)
+                                    # LEGEND_ONLY_LABELS.append(thescatter)
+
+                                    j += 1
+                                    events_list[weeks.index(w)] += selected[category][yw][k].replace("\"", "").strip() + ";\n"
+                                else:
+                                    thescatter = plt.scatter(x, y, color='red', marker=f'${j}$',
+                                                             s=20,
+                                                             linewidths=0.5,
+                                                             label=translations[selected[category][yw][k]].replace("\"", "").strip(),
+                                                             zorder=3)
+                                    # LEGEND_ONLY_LABELS.append(thescatter)
+
+                                    j += 1
+                                    events_list[weeks.index(w)] += translations[selected[category][yw][k]].replace("\"", "").strip() + ";\n"
 
                         else:
                             # y_values = np.linspace(-10, y_max,
                             #                        num_markers)
                             # plt.scatter(np.full_like(y_values, x), y_values, color='red', marker=markers[j])
-                            plt.scatter(x, y_max_curr / 2, color='red', marker=f'${j}$',
-                                        s = 20,
-                                        linewidths=0.5,
-                                        label=get_display(arabic_reshaper.reshape(selected[category][yw][0].replace("\"", "").strip())),
-                                        zorder=3)
 
-                            j += 1
 
-                            events_list[weeks.index(w)] = selected[category][yw][0].replace("\"", "").strip()
+                            if plot_in_arabic:
+                                plt.scatter(x, y_max_curr / 2, color='red', marker=f'${j}$',
+                                            s = 20,
+                                            linewidths=0.5,
+                                            label=get_display(arabic_reshaper.reshape(selected[category][yw][0].replace("\"", "").strip())),
+                                            zorder=3)
+
+                                j += 1
+
+                                events_list[weeks.index(w)] = selected[category][yw][0].replace("\"", "").strip()
+                            else:
+                                try:
+                                    plt.scatter(x, y_max_curr / 2, color='red', marker=f'${j}$',
+                                                s=20,
+                                                linewidths=0.5,
+                                                label=translations[selected[category][yw][0]].replace("\"", "").strip(),
+                                                zorder=3)
+                                except:
+                                    print()
+
+                                j += 1
+
+                                events_list[weeks.index(w)] = translations[selected[category][yw][0]].replace("\"", "").strip()
 
                             # Collect handles and labels for scatter plots in this category
                             handles, labels = plt.gca().get_legend_handles_labels()
@@ -172,11 +201,62 @@ def plot_volume(categories2volumes, add_slabs=False, add_regions=False):
             # Create an empty plot
             fig_legend, ax_legend = plt.subplots()
 
+            def wrap_text(text, max_words=4):
+                words = text.split()
+                return '\n'.join([' '.join(words[i:i + max_words]) for i in range(0, len(words), max_words)])
+
+            legend_labels = [wrap_text(label, max_words=3) for label in legend_labels]
             # Add a legend
-            if category in ['corruption', 'sexuality']:
-                ax_legend.legend(legend_handles, legend_labels, loc='upper center', bbox_to_anchor=(0, 0, 1, 1), ncol=3, columnspacing=0.2)
+            # if category in ['corruption', 'sexuality']:
+            #     ax_legend.legend(legend_handles, legend_labels, loc='upper center', bbox_to_anchor=(0, 0, 1, 1), ncol=3, columnspacing=0.2, fontsize='small')
+            # else:
+            #     ax_legend.legend(legend_handles, legend_labels, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize='small')
+            # if category in ['corruption', 'sexuality', 'gender']:
+            # ax_legend.legend(
+            #         legend_handles,
+            #         legend_labels,
+            #         loc='upper center',
+            #         bbox_to_anchor=(0, 0.15, 1, 1),  # 👈 move legend up slightly
+            #         ncol=3,
+            #         columnspacing=0.3,
+            #         fontsize='xx-small',
+            #         mode='expand'  # 👈 force stretching horizontally
+            #     )
+            if category == 'corruption':
+                ax_legend.legend(
+                    legend_handles,
+                    legend_labels,
+                    loc='upper center',
+                    bbox_to_anchor=(0, 0.1, 1, 1),  # full width
+                    ncol=4,
+                    columnspacing=0.3,
+                    fontsize='xx-small',
+                    mode='expand'
+                )
             else:
-                ax_legend.legend(legend_handles, legend_labels, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
+                ax_legend.legend(
+                    legend_handles,
+                    legend_labels,
+                    loc='upper center',
+                    bbox_to_anchor=(0, 0.1, 1, 1),  # full width
+                    ncol=3,
+                    columnspacing=0.3,
+                    fontsize='xx-small',
+                    mode='expand'
+                )
+
+            # else:
+            #     ax_legend.legend(
+            #         legend_handles,
+            #         legend_labels,
+            #         loc='upper center',
+            #         bbox_to_anchor=(0, 0.15, 1, 1),  # 👈 adjusted for all
+            #         ncol=2,
+            #         fontsize='x-small',
+            #         mode='expand'  # 👈 stretch legend across full width
+            #     )
+
+
             ax_legend.axis('off')
 
             fig_legend.set_size_inches(fig_width_inches, fig_height_inches)
@@ -260,6 +340,21 @@ def plot_volume(categories2volumes, add_slabs=False, add_regions=False):
                 plt.close()
 
 
+def add_translation(df_2023):
+    from googletrans import Translator
+    translator = Translator()
+
+    event_descriptions_ar2en = {}
+    for i, row in df_2023.iterrows():
+        event_desc_ar = str(row['كلمات مفتاحية']).strip()
+        if event_desc_ar in ["", "nan"]:
+            continue
+        event_desc_en = translator.translate(event_desc_ar, src='ar', dest='en').text
+        event_descriptions_ar2en[event_desc_ar] = event_desc_en
+
+    return event_descriptions_ar2en
+
+
 if __name__ == '__main__':
     category2english = {
         # 'عنصري': 'racist',
@@ -281,6 +376,9 @@ if __name__ == '__main__':
 
     file_name_events = input("Please enter the name of the events dataset: ")
     df_events = pd.read_excel(file_name_events)
+
+    with open('event_translations.pkl', 'rb') as f:
+        translations = pickle.load(f)
 
     for i, row in df_events.iterrows():
         date_str = str(row['التاريخ'])
@@ -394,7 +492,36 @@ if __name__ == '__main__':
 
     categories2volumes = {}
     # for subdir, dirs, files in os.walk('Volume-New (5)/'):
-    for subdir, dirs, files in os.walk('Volume-FACEBOOK/'):
+    # for subdir, dirs, files in os.walk('Volume-FACEBOOK-UPDATEDD/'):
+    for subdir, dirs, files in os.walk('Volumesssss/Volume-FACEBOOK-Updated/'):
+    # for subdir, dirs, files in os.walk('Volume-New/'):
+        if '-KD' in subdir:
+            for file in files:
+                if 'E' in file and '2023' in file:
+                    df = pd.read_excel(os.path.join(subdir, file), sheet_name='weekly')
+
+                    # category = subdir.split('\\')[0].split('/')[1]
+                    category = subdir.split('\\')[0].split('/')[-1]
+                    if category in categories:
+                        if category == 'refugee' and 'E2023-06-01' in file:
+                            print()
+                        print(category)
+                        weeks = list(df['Week'])
+                        values = list(df['Comments'])
+
+                        print(weeks)
+                        print(values)
+
+                        if category not in categories2volumes:
+                            categories2volumes[category] = {}
+
+                        for i, w in enumerate(weeks):
+                            if w in categories2volumes[category]:
+                                categories2volumes[category][w] += int(float(str(values[i])))
+                            else:
+                                categories2volumes[category][w] = int(float(str(values[i])))
+                        print()
+    for subdir, dirs, files in os.walk('Volumesssss/Volume-New (5)/'):
     # for subdir, dirs, files in os.walk('Volume-New/'):
         if '-KD' in subdir:
             for file in files:
@@ -472,9 +599,82 @@ if __name__ == '__main__':
     categories2volumesordered = {k: categories2volumes[k] for k in categories2names}
     categories2colors = {cat: colors[i] for i, cat in enumerate(cats_ordered)}
 
-    save_dirs2 = '../paper_plots/volume_slab_plots/'
+    # save_dirs2 = '../paper_plots/volume_slab_plots/'
+    save_dirs2 = '../paper_plots_stephanie/volume_slab_plots/'
+    mkdir(save_dirs2)
     mkdir(save_dirs2)
 
-    # plot_volume(categories2volumes=categories2volumesordered, add_slabs=False)
-    plot_volume(categories2volumes=categories2volumesordered, add_slabs=True, add_regions=False)
+    plot_volume(categories2volumes=categories2volumesordered, add_slabs=False, plot_in_arabic=False)
+    plot_volume(categories2volumes=categories2volumesordered, add_slabs=True, add_regions=False, plot_in_arabic=False)
     # plot_volume(categories2volumes=categories2volumesordered, add_slabs=True, add_regions=True)
+
+    ################
+    ########################################################### BAR PLTOS...............................................
+
+    import matplotlib.pyplot as plt
+
+    save_dirs3 = '../paper_plots_stephanie/volume_bar_plots/'
+    mkdir(save_dirs3)
+
+    for category in selected:
+        event2comments = {}
+
+        for year_week, events in selected[category].items():
+            # Extract week number from "YYYY-WW"
+            try:
+                week_num = int(year_week.split("-")[1])
+            except:
+                continue
+
+            # Get the corresponding comment volume
+            comment_volume = categories2volumes.get(category, {}).get(week_num, 0)
+
+            for event in events:
+                translated_event = translations[event]
+                if translated_event not in event2comments:
+                    event2comments[translated_event] = 0
+                event2comments[translated_event] += comment_volume
+
+        if not event2comments:
+            continue  # skip empty categories
+
+        # Sort by total comments
+        sorted_events = sorted(event2comments.items(), key=lambda x: x[1], reverse=True)
+
+        event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
+        comment_counts = [count for _, count in sorted_events]
+
+        # Arabic reshaped + sorted labels
+        event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
+        comment_counts = [count for _, count in sorted_events]
+
+        # Set plot size dynamically
+        fig_width = max(8, len(event_names) * 0.3)
+        plt.figure(figsize=(fig_width, 6))
+
+        # Plot vertical bars
+        plt.bar(event_names, comment_counts, color='skyblue')
+
+        plt.xticks(rotation=90, ha='center')  # Rotate Arabic labels for readability
+        plt.ylabel("Total number of comments", fontweight='bold')  # Arabic-friendly label
+        # plt.title(get_display(arabic_reshaper.reshape(f"عدد التعليقات لكل حدث - {categories2arabic[category]}")),
+        #           fontweight='bold')
+        plt.tight_layout()
+
+        # Save
+        plt.savefig(os.path.join(save_dirs3, f'{category}.png'), dpi=600)
+        plt.close()
+
+        #
+        # # Adjust figure size based on number of events
+        # fig_height = max(2, len(event_names) * 0.3)
+        # plt.figure(figsize=(8, fig_height))
+        # plt.barh(event_names, comment_counts, color='steelblue')
+        # plt.xlabel("Total Number of Comments", fontweight='bold')
+        # title_ar = get_display(arabic_reshaper.reshape(categories2arabic[category]))
+        # plt.title(f"Total Comments per Event | {category.capitalize()} | {title_ar}", fontweight='bold')
+        # plt.tight_layout()
+        # plt.gca().invert_yaxis()
+        #
+        # plt.savefig(os.path.join(save_dirs3, f'total_comments_per_event_{category}.png'), dpi=600)
+        # plt.close()
