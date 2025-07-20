@@ -46,8 +46,10 @@ ar2en = {
         # 'جنسي': 'sexuality',
         'ديني': 'religion',
         'سياسة وأمن': 'politics and security',
-        'لجوء': 'refugee'
+        'لجوء': 'refugees'
     }
+
+en2ar = {v:k for k,v in ar2en.items()}
 
 def unique_list(l):
     ulist = []
@@ -58,6 +60,34 @@ def unique_list(l):
 def wrap_text(text, max_words=4):
     words = text.split()
     return '\n'.join([' '.join(words[i:i + max_words]) for i in range(0, len(words), max_words)])
+
+
+def map_events_to_unique_identifiers(df_united, df_event_timeline):
+    eventuid2desc = dict(zip(df_event_timeline["EventIDRowwise"], df_event_timeline["KeywordEventDescriptionEN"]))
+    import numpy as np
+    del eventuid2desc[np.nan]
+
+    # EventIDRowwise
+    #KeywordEventDescriptionEN
+    uidentifiers = []
+    udesc = []
+    for i, row in df_united.iterrows():
+        eid = row["EventID"]
+        cat = row["EventTypeEN"]
+        if cat == 'refugees':
+            cat = 'refugee'
+        u = eid + "_" + cat
+        found = False
+        for k in eventuid2desc:
+            if u in k:
+                uidentifiers.append(k)
+                udesc.append(eventuid2desc[k])
+                found = True
+                break
+        if not found:
+            print()
+
+    return uidentifiers, udesc
 
 
 evenetnames2shorteventnames = {
@@ -76,85 +106,40 @@ evenetnames2shorteventnames = {
 en2ar = {v: k for k, v in ar2en.items()}
 
 df = pd.read_excel('df_united_final.xlsx')
-
-with open('event_translations.pkl', 'rb') as f:
-    translations = pickle.load(f)
-
-dates = list(df_selected['التاريخ'])[:35]
-dates_new = []
-for d in dates:
-    d = str(d)
-    try:
-        date_dt = datetime.strptime(d[:10], '%Y-%m-%d').strftime('%d-%m-%Y')
-    except:
-
-        date_dt = datetime.strptime(d[:10], '%Y-%d-%m').strftime('%d-%m-%Y')
-
-    dates_new.append('E{}'.format(date_dt))
-
-names = list(df_selected['كلمات مفتاحية'])[:35]
-names = [n.replace("\"", '') for n in names]
-names_new = []
-for n in names:
-    names_mod = n.replace("\"", '')
-    names_mod = re.sub(' +', ' ', names_mod)
-    if names_mod in evenetnames2shorteventnames:
-        print(f'{names_mod} replaced with {evenetnames2shorteventnames[names_mod]}')
-        names_mod = evenetnames2shorteventnames[names_mod]
-
-    names_mod = ' '.join(unique_list(names_mod.split()))
-    # names_new.append(names_mod)
-    names_new.append(translations[names_mod])
-
-# names = names_new
-
-
-dictionary = dict(zip(dates_new, names_new))
-
-# df = pd.read_excel('serving.xlsx')
-# df = pd.read_excel('serving_collapsed.xlsx')
-file_location = input("Please enter the name of the serving file [this assumes its in the same directory] ")
-# language_legend = input("Please enter the language used in the legend: ")
-df = pd.read_excel('{}'.format(file_location))
-
-df_orig = df.replace({'Final_label_offensive': 'offensive',
-                 'Final_label_accusation': 'accusation',
-                 'Final_label_incitement': 'incitement',
-                 'Final_label_none': 'none'})
-
-# EXTRA
-df_orig = df_orig[df_orig['Final_label'].notna()]
-# END OF EXTRA
-
-# EXTRA - Does not make sense to have none and another label
+df_event_timelines = pd.read_excel("2023-edited-hiyam-2025-eventdescen-added.xlsx")
+dictionary = dict(zip(df_event_timelines["EventIDRowwise"], df_event_timelines["KeywordEventDescriptionEN"]))
 labels_updated = []
-for i, row in df_orig.iterrows():
-    l = str(row['Final_label']).strip()
-    if 'none,' in l:
-        lnew = l.replace('none,', '')
-        labels_updated.append(lnew)
-    elif 'none, ' in l:
-        lnew = l.replace('none, ', '')
-        labels_updated.append(lnew)
-
-    elif ',none' in l:
-        lnew = l.replace(',none', '')
-        labels_updated.append(lnew)
-    elif ', none' in l:
-        lnew = l.replace(', none', '')
-        labels_updated.append(lnew)
-
+countLall_zeros = 0
+for i, row in df.iterrows():
+    l = ''
+    if str(row["none"]) == "1":
+        l = 'none'
     else:
-        labels_updated.append(l)
+        if str(row["offensive"]) == "1":
+            l += "offensive"
+        if str(row["accusation"]) == "1":
+            l += ", accusation"
+        if str(row["incitement"]) == "1":
+            l += ", incitement"
 
-df_orig['Final_label'] = labels_updated
+    if l == "":
+        l = "none"
+        countLall_zeros += 1
+    labels_updated.append(l)
+
+print(f"ALL ZEROS: {countLall_zeros}")
+
+df['Final_label'] = labels_updated
+uiden, desc = map_events_to_unique_identifiers(df_united=df, df_event_timeline=df_event_timelines)
+df["EventIDRowwise"] = uiden
+df["KeywordDescEN"] = desc
 # END OF EXTRA
 
 # color_palette = sns.color_palette('husl', n_colors=len(df_orig['Final_label'].unique()))
-color_palette = sns.color_palette("colorblind", n_colors=len(df_orig['Final_label'].unique()))
+color_palette = sns.color_palette("colorblind", n_colors=len(df['Final_label'].unique()))
 
 # labels_original = ['offensive', 'none', 'incitement', 'accusation']
-labels_original = list(df_orig['Final_label'].unique())
+labels_original = list(df['Final_label'].unique())
 colors = [color_palette[j] for j, _ in enumerate(labels_original)]
 label2color = {}
 for z, label in enumerate(labels_original):
@@ -174,6 +159,7 @@ for l in labels_original:
     lsub = [s.strip() for s in lsub]
     s = ''
     for lsubsub in lsub:
+
         ld = get_display(arabic_reshaper.reshape(labels2ar[lsubsub]))
         if s != '':
             s += ', {}'.format(ld)
@@ -186,28 +172,30 @@ for l in labels_original:
 stats = {}
 
 for LABEL in ['annotated', 'served']:
-    df_annserv = df_orig[df_orig['Annotated-Served'] == f'{LABEL}']
+    df_annserv = df[df['Annotated_Served'] == f'{LABEL}']
 
     stats[LABEL] = {}
 
-    for category in tqdm(list(set(list(df_annserv['theme'])))):
+    for category in tqdm(list(set(list(df_annserv['EventTypeEN'])))):
             j = 1
 
             print(category)
-            category_en = ar2en[category]
-            category_ar = category
+            # category_en = ar2en[category]
+            # category_ar = category
+            category_en = category
+            category_ar = en2ar[category]
 
             stats[LABEL][category_en] = {}
 
             # for event in list(set(list(df['EventID']))):
-            df_sub = df_annserv[df_annserv['theme'] == category]
+            df_sub = df_annserv[df_annserv['EventTypeEN'] == category]
             # df_sub = df_sub[df_sub['EventID'] == event]
 
             if len(df_sub) == 0:
                 continue
 
             # Get unique EventIDs
-            event_ids = df_sub['EventID'].unique()
+            event_ids = df_sub['EventIDRowwise'].unique()
 
             # Calculate the number of rows and columns
             n_subplots = len(event_ids)
@@ -244,7 +232,7 @@ for LABEL in ['annotated', 'served']:
                 #     print()
                 row, col = divmod(i, ncols)  # Calculate the row and column index
                 print('row: {}, col: {}'.format(row, col))
-                subset_df = df_sub[df_sub['EventID'] == event_id]
+                subset_df = df_sub[df_sub['EventIDRowwise'] == event_id]
 
                 labels2counts = {}
                 for z, rowz in subset_df.iterrows():
@@ -277,7 +265,8 @@ for LABEL in ['annotated', 'served']:
                 #                          fontweight='bold',
                 #                          # pad=15,
                 #                          y=1.0001)  # Adjust the pad parameter for title spacing
-                axes[row, col].set_title(f'{wrap_text(dictionary[event_id], max_words=3)}',
+                t = dictionary[event_id] + " " + event_id.split("_")[-1]
+                axes[row, col].set_title(f'{wrap_text(t, max_words=3)}',
                                          fontsize='x-small',
                                          fontweight='bold',
                                          # pad=15,
@@ -358,7 +347,6 @@ for LABEL in ['annotated', 'served']:
 
             plt.savefig(os.path.join(save_dir2, '{}_{}.png'.format(category_en, LABEL)), dpi=600)
             plt.close()
-
 
             for lang in ["english", "arabic"]:
                 if lang == "english":
