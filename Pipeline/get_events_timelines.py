@@ -73,6 +73,10 @@ def add_event_description_translations(df_2023, translation_dict):
 
     return df_2023
 
+def add_event_keyword_descriptions(df_2023, df_prelim):
+    df_2023["KeywordEventDescriptionEN"] = df_prelim["preliminary_google_translation"]
+    return df_2023
+
 
 # def add_event_statuses(df_2023, translations, VOLUME_EVENTS, SERVING_ANNOTATED_EVENTS):
 #     event_statuses = []
@@ -97,6 +101,7 @@ if __name__ == '__main__':
     df = pd.read_excel("2023-edited-hiyam-2025.xlsx")
     df_annotated = pd.read_excel("MultiLabel-Annotated.xlsx")
     df_united = pd.read_excel("df_united_final.xlsx")
+    df_prelim = pd.read_excel("preliminary_keyword_translations_hiyam_edited.xlsx")
 
     VOLUME_EVENTS = set()
     for subdir, dirs, files in os.walk('Volumesssss/'):
@@ -115,5 +120,9 @@ if __name__ == '__main__':
     df_upd = add_event_description_translations(df_2023=df, translation_dict=translations)
     all_cols = list(df_upd.columns)
     # df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-2]] # just re-ordering columns in the data
-    df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-3]]
+    # df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-3]]
+    df_upd = add_event_keyword_descriptions(df_2023=df_upd, df_prelim=df_prelim)
+    df_upd = df_upd[['التاريخ', 'EventIDRowwise', 'day', 'month', 'year', 'العنوان',
+       'EventDescriptionEN', 'النوع', 'كلمات مفتاحية', 'KeywordEventDescriptionEN',
+       'Drop Down Window of Date']]
     df_upd.to_excel("2023-edited-hiyam-2025-eventdescen-added.xlsx", index=False)
