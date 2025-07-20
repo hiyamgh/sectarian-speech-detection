@@ -28,9 +28,11 @@ def add_translation(df_2023):
     translator = Translator()
 
     event_descriptions_ar2en = {}
+    preliminary_translations = []
     for i, row in tqdm(df_2023.iterrows(), total=len(df_2023)):
         event_desc_ar = str(row['كلمات مفتاحية']).strip()
         if event_desc_ar in ["", "nan"]:
+            preliminary_translations.append("")
             continue
         names_mod = event_desc_ar.replace("\"", '')
         names_mod = re.sub(' +', ' ', names_mod)
@@ -39,20 +41,26 @@ def add_translation(df_2023):
 
         names_mod = ' '.join(unique_list(names_mod.split()))
         event_desc_en = translator.translate(names_mod, src='ar', dest='en').text
-        print(f'Translated {names_mod} to {event_desc_en}')
-        r = input('Do you agree to this translation?')
-        if r.strip() == 'n':
-            event_desc_en = input('Alternative Translation: ').strip()
-        event_descriptions_ar2en[names_mod] = event_desc_en
+        preliminary_translations.append(event_desc_en)
+        # print(f'Translated {names_mod} to {event_desc_en}')
+        # r = input('Do you agree to this translation?')
+        # if r.strip() == 'n':
+        #     event_desc_en = input('Alternative Translation: ').strip()
+        # event_descriptions_ar2en[names_mod] = event_desc_en
 
-    return event_descriptions_ar2en
+    # return event_descriptions_ar2en
+    return preliminary_translations
 
 
 if __name__ == '__main__':
-    df_events = pd.read_excel('2023.xlsx')
-    event_desc_ar2en = add_translation(df_2023=df_events)
+    # df_events = pd.read_excel('2023.xlsx')
+    df_events = pd.read_excel('2023-edited-hiyam-2025.xlsx')
+    prelim_trans = add_translation(df_2023=df_events)
 
-    with open('event_translations.pkl', 'wb') as f:
-        pickle.dump(event_desc_ar2en, f)
+    df = pd.DataFrame()
+    df["العنوان"] = df_events["العنوان"]
+    df["كلمات مفتاحية"] = df_events["كلمات مفتاحية"]
+    df["preliminary_google_translation"] = prelim_trans
+    df.to_excel("preliminary_keyword_translations.xlsx", index=False)
 
-    print("Translation dictionary saved as 'event_translations.pkl'")
+    # print("Translation dictionary saved as 'event_translations.pkl'")
