@@ -37,7 +37,7 @@ def translate_event_descriptions(df_2023):
         desc_en = translator.translate(desc_ar, src='ar', dest='en').text
         print(f"Translated {desc_ar} into {desc_en}")
 
-        event_identifier = event_id + "_" + event_category + f"_row{row_num+1}"
+        event_identifier = event_id + "_" + event_category + f"_row{row_num+2}"
         event_desc_ar2en[event_identifier] = desc_en
 
     with open('event_description_translations.pkl', 'wb') as f:
@@ -61,7 +61,7 @@ def add_event_description_translations(df_2023, translation_dict):
         event_id = "E" + day + "-" + month + "-" + year
         event_category = category2english[str(row["النوع"])]
         row_num = i
-        event_identifier = event_id + "_" + event_category + f"_row{row_num+1}"
+        event_identifier = event_id + "_" + event_category + f"_row{row_num+2}"
         col_translations.append(translation_dict[event_identifier])
         event_identifiers_rowwise.append(event_identifier)
 
@@ -108,11 +108,12 @@ if __name__ == '__main__':
         SERVING_ANNOTATED_EVENTS.add(str(row["EventID"]))
 
     # print(f"Number of UNIQUE (Volume-Only) events: {len(UNIQUE_EVENTS)}")
-    translate_event_descriptions(df_2023=df) # will save translations of العنوان (event description) into event_description_translations.pkl
+    # translate_event_descriptions(df_2023=df) # will save translations of العنوان (event description) into event_description_translations.pkl
     with open('event_description_translations.pkl', 'rb') as f:
         translations = pickle.load(f)
 
     df_upd = add_event_description_translations(df_2023=df, translation_dict=translations)
     all_cols = list(df_upd.columns)
-    df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-1]] # just re-ordering columns in the data
+    # df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-2]] # just re-ordering columns in the data
+    df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-3]]
     df_upd.to_excel("2023-edited-hiyam-2025-eventdescen-added.xlsx", index=False)
