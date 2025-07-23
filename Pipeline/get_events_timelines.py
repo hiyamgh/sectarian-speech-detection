@@ -77,6 +77,13 @@ def add_event_keyword_descriptions(df_2023, df_prelim):
     df_2023["KeywordEventDescriptionEN"] = df_prelim["preliminary_google_translation"]
     return df_2023
 
+def add_theme_translation(df_2023):
+    """ Add new column for theme translation in English """
+    categories_en = []
+    for i, row in df_2023.iterrows():
+        category_ar = str(row["النوع"])
+        categories_en.append(category2english[category_ar])
+    return categories_en
 
 # def add_event_statuses(df_2023, translations, VOLUME_EVENTS, SERVING_ANNOTATED_EVENTS):
 #     event_statuses = []
@@ -122,7 +129,14 @@ if __name__ == '__main__':
     # df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-2]] # just re-ordering columns in the data
     # df_upd = df_upd[all_cols[:1] + ["EventIDRowwise"] + all_cols[1:5] + ["EventDescriptionEN"] + all_cols[5:-3]]
     df_upd = add_event_keyword_descriptions(df_2023=df_upd, df_prelim=df_prelim)
+    df_upd["EventTypeEN"] = add_theme_translation(df_2023=df_upd)
     df_upd = df_upd[['التاريخ', 'EventIDRowwise', 'day', 'month', 'year', 'العنوان',
-       'EventDescriptionEN', 'النوع', 'كلمات مفتاحية', 'KeywordEventDescriptionEN',
+       'EventDescriptionEN', 'النوع', 'EventTypeEN','كلمات مفتاحية', 'KeywordEventDescriptionEN',
        'Drop Down Window of Date']]
+    df_upd = df_upd.rename(columns={
+        'التاريخ': 'date',
+        'العنوان': 'EventDescriptionAR',
+        'النوع': 'EventTypeAR',
+        'كلمات مفتاحية': 'Keywords'
+    })
     df_upd.to_excel("2023-edited-hiyam-2025-eventdescen-added.xlsx", index=False)
