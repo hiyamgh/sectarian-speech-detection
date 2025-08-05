@@ -120,12 +120,12 @@ def plot_volume(categories2volumes, add_slabs=False, add_regions=False, plot_in_
                                     thescatter = plt.scatter(x, y, color='red', marker=f'${j}$',
                                                              s=20,
                                                              linewidths=0.5,
-                                                             label=translations[selected[category][yw][k]].replace("\"", "").strip(),
+                                                             label=selected[category][yw][k].replace("\"", "").strip(),
                                                              zorder=3)
                                     # LEGEND_ONLY_LABELS.append(thescatter)
 
                                     j += 1
-                                    events_list[weeks.index(w)] += translations[selected[category][yw][k]].replace("\"", "").strip() + ";\n"
+                                    events_list[weeks.index(w)] += selected[category][yw][k].replace("\"", "").strip() + ";\n"
 
                         else:
                             # y_values = np.linspace(-10, y_max,
@@ -148,14 +148,14 @@ def plot_volume(categories2volumes, add_slabs=False, add_regions=False, plot_in_
                                     plt.scatter(x, y_max_curr / 2, color='red', marker=f'${j}$',
                                                 s=20,
                                                 linewidths=0.5,
-                                                label=translations[selected[category][yw][0]].replace("\"", "").strip(),
+                                                label=selected[category][yw][0].replace("\"", "").strip(),
                                                 zorder=3)
                                 except:
                                     print()
 
                                 j += 1
 
-                                events_list[weeks.index(w)] = translations[selected[category][yw][0]].replace("\"", "").strip()
+                                events_list[weeks.index(w)] = selected[category][yw][0].replace("\"", "").strip()
 
                             # Collect handles and labels for scatter plots in this category
                             handles, labels = plt.gca().get_legend_handles_labels()
@@ -223,13 +223,14 @@ def plot_volume(categories2volumes, add_slabs=False, add_regions=False, plot_in_
             #         mode='expand'  # 👈 force stretching horizontally
             #     )
             if category == 'corruption':
+                legend_labels = [wrap_text(label, max_words=2) for label in legend_labels]
                 ax_legend.legend(
                     legend_handles,
                     legend_labels,
                     loc='upper center',
-                    bbox_to_anchor=(0, 0.1, 1, 1),  # full width
-                    ncol=4,
-                    columnspacing=0.3,
+                    bbox_to_anchor=(0, 0.15, 1, 1),  # full width
+                    ncol=5,
+                    columnspacing=1,
                     fontsize='xx-small',
                     mode='expand'
                 )
@@ -372,33 +373,40 @@ if __name__ == '__main__':
 
     # added by Dr. Fatima
     selected['gender'] = {}
-    selected['gender']['2023-01'] = ['منصور لبكي']
+    # selected['gender']['2023-01'] = ['منصور لبكي']
+    selected['gender']['2023-01'] = ['Mansour Labaki']
 
-    file_name_events = input("Please enter the name of the events dataset: ")
-    df_events = pd.read_excel(file_name_events)
+    # file_name_events = input("Please enter the name of the events dataset: ")
+    # df_events = pd.read_excel(file_name_events)
 
-    with open('event_translations.pkl', 'rb') as f:
-        translations = pickle.load(f)
+    df_events = pd.read_excel("2023-edited-hiyam-2025-eventdescen-added.xlsx")
+
+    # with open('event_translations.pkl', 'rb') as f:
+    #     translations = pickle.load(f)
 
     for i, row in df_events.iterrows():
-        date_str = str(row['التاريخ'])
+        # date_str = str(row['التاريخ'])
+        date_str = str(row["date"])
 
         if '2023' not in date_str:
             continue
 
-        keywords_text = str(row['كلمات مفتاحية']).strip()
-        if keywords_text in ["", "nan"]:
-            continue
+        # keywords_text = str(row['كلمات مفتاحية']).strip()
+        # if keywords_text in ["", "nan"]:
+        #     continue
+        #
+        # names_mod = keywords_text.replace("\"", '')
+        # names_mod = re.sub(' +', ' ', names_mod)
+        # if names_mod in evenetnames2shorteventnames:
+        #     names_mod = evenetnames2shorteventnames[names_mod]
+        #
+        # names_mod = ' '.join(unique_list(names_mod.split()))
+        row_num = str(row["EventIDRowwise"]).split("_")[-1]
+        names_mod = str(row["KeywordEventDescriptionEN"]) + f" ({row_num})"
 
-        names_mod = keywords_text.replace("\"", '')
-        names_mod = re.sub(' +', ' ', names_mod)
-        if names_mod in evenetnames2shorteventnames:
-            names_mod = evenetnames2shorteventnames[names_mod]
 
-        names_mod = ' '.join(unique_list(names_mod.split()))
-
-
-        category = category2english[str(row['النوع'])]
+        # category = category2english[str(row['النوع'])]
+        category = str(row["EventTypeEN"])
         # if "عماد عثمان" in str(row['كلمات مفتاحية']):
         #     print()
         try:
@@ -432,13 +440,8 @@ if __name__ == '__main__':
     categories2events = {}
     for i, row in tqdm(df_events.iterrows(), total=len(df_events)):
 
-        keywords_text = str(row['كلمات مفتاحية']).strip()
-        keywords_text_facebook = str(row['كلمات مفتاحية']).strip()
-
-        if keywords_text in ["", "nan"]:
-            continue
-
-        time_after = row['التاريخ']
+        # time_after = row['التاريخ']
+        time_after = row['date']
 
         if '2023' not in str(time_after):  # restricting the years 2023
             continue
@@ -453,8 +456,10 @@ if __name__ == '__main__':
         else:
             week_nb = int(week_nb)
 
-        category = str(row['النوع'])
-        category_en = category2english[category]  # get the english equivalent of the category
+        # category = str(row['النوع'])
+        # category_en = category2english[category]  # get the english equivalent of the category
+        category = str(row['EventTypeAR'])
+        category_en = str(row["EventTypeEN"])  # get the english equivalent of the category
 
         if category_en not in categories2events:
             categories2events[category_en] = []
@@ -615,29 +620,90 @@ if __name__ == '__main__':
 
     save_dirs3 = '../paper_plots_stephanie/volume_bar_plots/'
     mkdir(save_dirs3)
+    events2names = dict(zip(df_events["EventIDRowwise"], df_events["KeywordEventDescriptionEN"]))
+    del events2names[np.nan]
+    categories2events2volumes = {}
+    for subdir, dirs, files in os.walk('Volumesssss/Volume-FACEBOOK-Updated/'):
+    # for subdir, dirs, files in os.walk('Volume-New/'):
+        if '-KD' in subdir:
+            for file in files:
+                if 'E' in file and '2023' in file:
+                    df = pd.read_excel(os.path.join(subdir, file), sheet_name='original')
+                    print(file)
+                    # category = subdir.split('\\')[0].split('/')[1]
+                    category = subdir.split('\\')[0].split('/')[-1]
+                    if category not in categories2events2volumes:
+                        categories2events2volumes[category] = {}
+                    comment_cols = [col for col in df.columns if "Comments" in col]
+                    total_sum = 0
+                    for col in comment_cols:
+                        total_sum += df[col].fillna(0).sum()
+                    print(total_sum)
 
-    for category in selected:
-        event2comments = {}
+                    splitted = file.replace(".xlsx", "").split("-")
+                    actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
+                    print()
+                    for k in events2names:
+                        if actual_file_name in k:
+                            event_name = k
+                            break
+                    try:
+                        rownum = event_name.split("_")[-1]
+                        enamedisplay = events2names[event_name] + f"({rownum})"
+                        if enamedisplay in categories2events2volumes[category]:
+                            categories2events2volumes[category][enamedisplay] += total_sum
+                        else:
+                            categories2events2volumes[category][enamedisplay] = total_sum
+                    except:
+                        print(f"{file}")
+    for subdir, dirs, files in os.walk('Volumesssss/Volume-New (5)/'):
+    # for subdir, dirs, files in os.walk('Volume-New/'):
+        if '-KD' in subdir:
+            for file in files:
+                if 'E' in file and '2023' in file:
+                    df = pd.read_excel(os.path.join(subdir, file), sheet_name='weekly')
 
-        for year_week, events in selected[category].items():
-            # Extract week number from "YYYY-WW"
-            try:
-                week_num = int(year_week.split("-")[1])
-            except:
-                continue
+                    # category = subdir.split('\\')[0].split('/')[1]
+                    category = subdir.split('\\')[0].split('/')[-1]
+                    if category not in categories2events2volumes:
+                        categories2events2volumes[category] = {}
+                    comment_cols = [col for col in df.columns if "Comments" in col]
+                    total_sum = 0
+                    for col in comment_cols:
+                        total_sum += df[col].fillna(0).sum()
+                    print(total_sum)
 
-            # Get the corresponding comment volume
-            comment_volume = categories2volumes.get(category, {}).get(week_num, 0)
+                    splitted = file.replace(".xlsx", "").split("-")
+                    actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
+                    print()
+                    for k in events2names:
+                        if actual_file_name in k:
+                            event_name = k
+                            break
+                    try:
+                        rownum = event_name.split("_")[-1]
+                        enamedisplay = events2names[event_name] + f"({rownum})"
+                        if enamedisplay in categories2events2volumes[category]:
+                            categories2events2volumes[category][enamedisplay] += total_sum
+                        else:
+                            categories2events2volumes[category][enamedisplay] = total_sum
+                    except:
+                        print(f"{file}")
 
-            for event in events:
-                translated_event = translations[event]
-                if translated_event not in event2comments:
-                    event2comments[translated_event] = 0
-                event2comments[translated_event] += comment_volume
 
-        if not event2comments:
-            continue  # skip empty categories
+    # HIYAMMMMMMMMMMM
+    for k in events2names:
+        category = k.split("_")[1]
+        rownum = k.split("_")[-1]
+        if str(events2names[k]) in ["nan", ""]:
+            continue
+        val = str(events2names[k]) + f"({rownum})"
+        if val not in categories2events2volumes[category]:
+            categories2events2volumes[category][str(val)] = 0
 
+    for category in categories2events2volumes:
+
+        event2comments = categories2events2volumes[category]
         # Sort by total comments
         sorted_events = sorted(event2comments.items(), key=lambda x: x[1], reverse=True)
 
@@ -664,6 +730,8 @@ if __name__ == '__main__':
         # Save
         plt.savefig(os.path.join(save_dirs3, f'{category}.png'), dpi=600)
         plt.close()
+
+
 
         #
         # # Adjust figure size based on number of events

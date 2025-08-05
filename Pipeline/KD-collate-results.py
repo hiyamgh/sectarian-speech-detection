@@ -11,8 +11,18 @@ logger = logging.getLogger('My_app')
 
 events2volumes = {}
 # for subdir, dirs, files in os.walk('Volume-New (5)/'):
-for subdir, dirs, files in os.walk('Volume-New/'):
+# for subdir, dirs, files in os.walk('Volume-New/'): #HIYAM: COMMENTED OFFF THIS LINE FROMLATES CODEEEEE
 # for subdir, dirs, files in os.walk('Volume-TikTok/'):
+
+# for subdir, dirs, files in os.walk('Volume-New (5)/'):
+# for subdir, dirs, files in os.walk('Volume-FACEBOOK-UPDATEDD/'):
+
+# for subdir, dirs, files in os.walk('Volumesssss/Volume-New (5)/'):
+for subdir, dirs, files in os.walk('Volumesssss/Volume-FACEBOOK-Updated/'):
+
+
+# for subdir, dirs, files in os.walk('C:/Users/hkg02/Downloads/Volume-New (5)/'):
+# for subdir, dirs, files in os.walk('C:/Users/hkg02/Downloads/Volume-New (5)/'):
     for file in files:
         if 'Accounts' not in file and 'Total-KD' in subdir and ('Twitter' in file or 'YouTube' in file or 'Facebook-Comments' in file or 'Instagram' in file or 'TikTok-Comments' in file):
 
@@ -46,10 +56,10 @@ for subdir, dirs, files in os.walk('Volume-New/'):
             comments_volume_updated = []
             for event_name in events2sheets:
 
-                if event_name != 'E2023-02-17':
-                    continue
-                else:
-                    print()
+                # if event_name != 'E2023-02-17':
+                #     continue
+                # else:
+                #     print()
                 df = events2sheets[event_name]
 
                 if 'Facebook-Comments' in file:
@@ -339,6 +349,11 @@ for e in events2volumes:
 
     to_del = []
 
-    with pd.ExcelWriter('Volume-New/{}/Total-{}/{}.xlsx'.format(category, withaccount, e)) as writer:  # doctest: +SKIP
+    # with pd.ExcelWriter('Volume-NEW (5)/{}/Total-{}/{}.xlsx'.format(category, withaccount, e)) as writer:  # doctest: +SKIP
+    # with pd.ExcelWriter('Volume-FACEBOOK-UPDATEDD/{}/Total-{}/{}.xlsx'.format(category, withaccount, e)) as writer:  # doctest: +SKIP
+    # with pd.ExcelWriter('Volumesssss/Volume-New (5)//{}/Total-{}/{}.xlsx'.format(category, withaccount, e)) as writer:  # doctest: +SKIP
+    with pd.ExcelWriter('Volumesssss/Volume-FACEBOOK-Updated/{}/Total-{}/{}.xlsx'.format(category, withaccount, e)) as writer:  # doctest: +SKIP
+        # Volumesssss/Volume-FACEBOOK-Updated/
+        # Volumesssss/Volume-New (5)/
         df_final.to_excel(writer, sheet_name='original', index=False)
         df_final_weeks.to_excel(writer, sheet_name='weekly', index=False)
