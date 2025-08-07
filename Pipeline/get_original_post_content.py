@@ -143,7 +143,8 @@ if __name__ == '__main__':
     argparser.add_argument('--platform', type=str, default='YouTube', help='The platform to scrape for')
     args = argparser.parse_args()
 
-    API_KEY = 'AIzaSyBmGp7Pc8MpPcwMavdqWBh0YPKxqYz1xOk'
+    with open("youtube_api_key.txt", "r") as f:
+        API_KEY = f.read()
 
     # urls = [
     #     "https://x.com/i/web/status/1713542383311192135",
