@@ -12,12 +12,14 @@ import random
 from tqdm import tqdm
 import re
 import pickle
+import plotly.graph_objects as go
+
 
 font_family = "Arial"  # Change this to "Helvetica" if you prefer Helvetica
 plt.rcParams['font.family'] = font_family
 plt.rcParams['font.size'] = 8  # Set the desired default font size (change 12 to your preferred size)
 plt.rcParams['text.antialiased'] = False
-plt.rcParams['text.hinting'] = False
+plt.rcParams['text.hinting'] = 'default'
 plt.rcParams['lines.dash_capstyle'] = 'butt'  # or 'round'
 # plt.rcParams['legend.fontsize'] = 7  # Set the legend font size
 
@@ -64,6 +66,109 @@ evenetnames2shorteventnames = {
     "دمج الطلاب السوريين بالطلاب اللبنانيين": "دمج الطلاب السوريين اللبنانيين",
     "المرتضى مكافحة الترويج للشذوذ الجنسي": "المرتضى مكافحة شذوذ جنسي",
 }
+
+def plotly_volume_plot3(categories2volumes, categories2arabic, categories2colors, plot_in_arabic=True):
+    for category in categories2volumes:
+        weeks = list(categories2volumes[category].keys())
+        volumes = list(categories2volumes[category].values())
+        weeks_numeric = list(range(1, len(weeks) + 1))  # Numeric x-axis
+        weeks_str = [str(i)+ " " for i in weeks_numeric]
+
+        category_ar = get_display(arabic_reshaper.reshape(categories2arabic[category])) if plot_in_arabic else category
+        line_label = f"{category} | {category_ar}"
+
+        fig = go.Figure()
+
+        # Line plot
+        fig.add_trace(go.Scatter(
+            # x=weeks_numeric,
+            x=weeks_str,
+            y=volumes,
+            mode='lines+markers',
+            name=line_label,
+            line=dict(color=categories2colors[category])
+        ))
+
+        annotations = []
+        shapes = []
+        event_counter = 1
+        table_data = [[], []]
+        for yw in selected[category]:
+            week_number = int(yw.split('-')[1])
+            if week_number in weeks:
+                x_pos = weeks.index(week_number) + 1
+                event_list = selected[category][yw]
+
+                # Add vertical dashed line from yref=paper (full height)
+                shapes.append(dict(
+                    type="line",
+                    x0=x_pos,
+                    x1=x_pos,
+                    # yref="paper",
+                    yref="y",
+                    y0=0,
+                    y1=1,
+                    xref="x",
+                    line=dict(color='gray', width=1, dash='dash')
+                ))
+
+                for i, event in enumerate(event_list):
+                    y_offset = max(volumes) + 2000 * i
+                    text = get_display(arabic_reshaper.reshape(event.strip())) if plot_in_arabic else event.strip()
+
+                    try:
+                        # table_data.append([event, eventsids2descriptions[event]])
+                        table_data[0].append(event)
+                        table_data[1].append(eventsids2descriptions[event])
+                    except:
+                        print(f"OOOOOPSSSSS {event}")
+
+                    annotations.append(dict(
+                        x=x_pos,
+                        y=y_offset,
+                        xref='x',
+                        yref='y',
+                        text=text,
+                        showarrow=True,
+                        arrowhead=2,
+                        ax=0,
+                        ay=-40,
+                        bgcolor='white',
+                        bordercolor='gray',
+                        borderwidth=1,
+                        font=dict(size=10)
+                    ))
+
+                    event_counter += 1
+
+        # fig.add_trace(go.Table(
+        #     header=dict(values=["Event ID", "Event Description"]),
+        #     cells=dict(values=table_data),
+        #     domain=dict(x=[0, 1], y=[0, 0.2])  # Table occupies bottom 25% of figure
+        # ))
+
+        fig.add_trace(go.Table(
+            header=dict(values=["Event ID", "Event Description"],
+                        fill_color='lightgray',
+                        align='left'),
+            cells=dict(values=table_data,
+                       height=20,  # decrease to fit more rows
+                       align='left'),
+            domain=dict(x=[0, 1], y=[0, 0.22])  # give more space to the table
+        ))
+
+        # Update layout to leave space for the table
+        fig.update_layout(
+            title=f"Event Volume Over Time - {category}",
+            xaxis=dict(title="Weeks", tickmode='array', tickvals=weeks_str, ticktext=weeks),
+            yaxis=dict(title="Volume", domain=[0.3, 1]),  # Line plot occupies top 70%
+            annotations=annotations,
+            shapes=shapes,
+            hovermode="x unified",
+            height=1000,
+        )
+
+        fig.write_html(os.path.join(save_dirs2, f"{category}.html"))
 
 
 def plot_volume(categories2volumes, add_slabs=False, add_regions=False, plot_in_arabic=True):
@@ -374,7 +479,8 @@ if __name__ == '__main__':
     # added by Dr. Fatima
     selected['gender'] = {}
     # selected['gender']['2023-01'] = ['منصور لبكي']
-    selected['gender']['2023-01'] = ['Mansour Labaki']
+
+    # selected['gender']['2023-01'] = ['Mansour Labaki']
 
     # file_name_events = input("Please enter the name of the events dataset: ")
     # df_events = pd.read_excel(file_name_events)
@@ -384,9 +490,11 @@ if __name__ == '__main__':
     # with open('event_translations.pkl', 'rb') as f:
     #     translations = pickle.load(f)
 
+    eventsids2descriptions = {}
     for i, row in df_events.iterrows():
         # date_str = str(row['التاريخ'])
         date_str = str(row["date"])
+        eventdesc = str(row["EventDescriptionEN"])
 
         if '2023' not in date_str:
             continue
@@ -402,8 +510,10 @@ if __name__ == '__main__':
         #
         # names_mod = ' '.join(unique_list(names_mod.split()))
         row_num = str(row["EventIDRowwise"]).split("_")[-1]
-        names_mod = str(row["KeywordEventDescriptionEN"]) + f" ({row_num})"
+        # names_mod = str(row["KeywordEventDescriptionEN"]) + f" ({row_num})"
+        names_mod = f"E{i + 1}"
 
+        eventsids2descriptions[names_mod] = eventdesc
 
         # category = category2english[str(row['النوع'])]
         category = str(row["EventTypeEN"])
@@ -604,132 +714,148 @@ if __name__ == '__main__':
     categories2volumesordered = {k: categories2volumes[k] for k in categories2names}
     categories2colors = {cat: colors[i] for i, cat in enumerate(cats_ordered)}
 
+
+    def rgb_tuple_to_str(rgb):
+        # Convert tuple with values in [0, 1] to rgb string
+        return f'rgb({int(rgb[0] * 255)}, {int(rgb[1] * 255)}, {int(rgb[2] * 255)})'
+
+
+    import matplotlib.colors as mcolors
+    plotly_colors = [rgb_tuple_to_str(c) for c in colors]
+    # plotly_colors = [mcolors.to_hex(c) for c in colors]  # returns '#1177b2' style
+
+    categories2colorsplotly = {cat: plotly_colors[i] for i, cat in enumerate(cats_ordered)}
+
+
     # save_dirs2 = '../paper_plots/volume_slab_plots/'
     save_dirs2 = '../paper_plots_stephanie/volume_slab_plots/'
     mkdir(save_dirs2)
     mkdir(save_dirs2)
 
-    plot_volume(categories2volumes=categories2volumesordered, add_slabs=False, plot_in_arabic=False)
-    plot_volume(categories2volumes=categories2volumesordered, add_slabs=True, add_regions=False, plot_in_arabic=False)
+    # plot_volume(categories2volumes=categories2volumesordered, add_slabs=False, plot_in_arabic=False)
+    # plot_volume(categories2volumes=categories2volumesordered, add_slabs=True, add_regions=False, plot_in_arabic=False)
+    plotly_volume_plot3(categories2volumes=categories2volumesordered, categories2arabic=categories2arabic,
+                        categories2colors=categories2colorsplotly, plot_in_arabic=False)
+
     # plot_volume(categories2volumes=categories2volumesordered, add_slabs=True, add_regions=True)
 
     ################
     ########################################################### BAR PLTOS...............................................
 
-    import matplotlib.pyplot as plt
-
-    save_dirs3 = '../paper_plots_stephanie/volume_bar_plots/'
-    mkdir(save_dirs3)
-    events2names = dict(zip(df_events["EventIDRowwise"], df_events["KeywordEventDescriptionEN"]))
-    del events2names[np.nan]
-    categories2events2volumes = {}
-    for subdir, dirs, files in os.walk('Volumesssss/Volume-FACEBOOK-Updated/'):
-    # for subdir, dirs, files in os.walk('Volume-New/'):
-        if '-KD' in subdir:
-            for file in files:
-                if 'E' in file and '2023' in file:
-                    df = pd.read_excel(os.path.join(subdir, file), sheet_name='original')
-                    print(file)
-                    # category = subdir.split('\\')[0].split('/')[1]
-                    category = subdir.split('\\')[0].split('/')[-1]
-                    if category not in categories2events2volumes:
-                        categories2events2volumes[category] = {}
-                    comment_cols = [col for col in df.columns if "Comments" in col]
-                    total_sum = 0
-                    for col in comment_cols:
-                        total_sum += df[col].fillna(0).sum()
-                    print(total_sum)
-
-                    splitted = file.replace(".xlsx", "").split("-")
-                    actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
-                    print()
-                    for k in events2names:
-                        if actual_file_name in k:
-                            event_name = k
-                            break
-                    try:
-                        rownum = event_name.split("_")[-1]
-                        enamedisplay = events2names[event_name] + f"({rownum})"
-                        if enamedisplay in categories2events2volumes[category]:
-                            categories2events2volumes[category][enamedisplay] += total_sum
-                        else:
-                            categories2events2volumes[category][enamedisplay] = total_sum
-                    except:
-                        print(f"{file}")
-    for subdir, dirs, files in os.walk('Volumesssss/Volume-New (5)/'):
-    # for subdir, dirs, files in os.walk('Volume-New/'):
-        if '-KD' in subdir:
-            for file in files:
-                if 'E' in file and '2023' in file:
-                    df = pd.read_excel(os.path.join(subdir, file), sheet_name='weekly')
-
-                    # category = subdir.split('\\')[0].split('/')[1]
-                    category = subdir.split('\\')[0].split('/')[-1]
-                    if category not in categories2events2volumes:
-                        categories2events2volumes[category] = {}
-                    comment_cols = [col for col in df.columns if "Comments" in col]
-                    total_sum = 0
-                    for col in comment_cols:
-                        total_sum += df[col].fillna(0).sum()
-                    print(total_sum)
-
-                    splitted = file.replace(".xlsx", "").split("-")
-                    actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
-                    print()
-                    for k in events2names:
-                        if actual_file_name in k:
-                            event_name = k
-                            break
-                    try:
-                        rownum = event_name.split("_")[-1]
-                        enamedisplay = events2names[event_name] + f"({rownum})"
-                        if enamedisplay in categories2events2volumes[category]:
-                            categories2events2volumes[category][enamedisplay] += total_sum
-                        else:
-                            categories2events2volumes[category][enamedisplay] = total_sum
-                    except:
-                        print(f"{file}")
-
-
-    # HIYAMMMMMMMMMMM
-    for k in events2names:
-        category = k.split("_")[1]
-        rownum = k.split("_")[-1]
-        if str(events2names[k]) in ["nan", ""]:
-            continue
-        val = str(events2names[k]) + f"({rownum})"
-        if val not in categories2events2volumes[category]:
-            categories2events2volumes[category][str(val)] = 0
-
-    for category in categories2events2volumes:
-
-        event2comments = categories2events2volumes[category]
-        # Sort by total comments
-        sorted_events = sorted(event2comments.items(), key=lambda x: x[1], reverse=True)
-
-        event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
-        comment_counts = [count for _, count in sorted_events]
-
-        # Arabic reshaped + sorted labels
-        event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
-        comment_counts = [count for _, count in sorted_events]
-
-        # Set plot size dynamically
-        fig_width = max(8, len(event_names) * 0.3)
-        plt.figure(figsize=(fig_width, 6))
-
-        # Plot vertical bars
-        plt.bar(event_names, comment_counts, color='skyblue')
-
-        plt.xticks(rotation=90, ha='center')  # Rotate Arabic labels for readability
-        plt.ylabel("Total number of comments", fontweight='bold')  # Arabic-friendly label
-        # plt.title(get_display(arabic_reshaper.reshape(f"عدد التعليقات لكل حدث - {categories2arabic[category]}")),
-        #           fontweight='bold')
-        plt.tight_layout()
-
-        # Save
-        plt.savefig(os.path.join(save_dirs3, f'{category}.png'), dpi=600)
-        plt.close()
+    # import matplotlib.pyplot as plt
+    #
+    # save_dirs3 = '../paper_plots_stephanie/volume_bar_plots/'
+    # mkdir(save_dirs3)
+    # events2names = dict(zip(df_events["EventIDRowwise"], df_events["KeywordEventDescriptionEN"]))
+    # del events2names[np.nan]
+    # categories2events2volumes = {}
+    # for subdir, dirs, files in os.walk('Volumesssss/Volume-FACEBOOK-Updated/'):
+    # # for subdir, dirs, files in os.walk('Volume-New/'):
+    #     if '-KD' in subdir:
+    #         for file in files:
+    #             if 'E' in file and '2023' in file:
+    #                 df = pd.read_excel(os.path.join(subdir, file), sheet_name='original')
+    #                 print(file)
+    #                 # category = subdir.split('\\')[0].split('/')[1]
+    #                 category = subdir.split('\\')[0].split('/')[-1]
+    #                 if category not in categories2events2volumes:
+    #                     categories2events2volumes[category] = {}
+    #                 comment_cols = [col for col in df.columns if "Comments" in col]
+    #                 total_sum = 0
+    #                 for col in comment_cols:
+    #                     total_sum += df[col].fillna(0).sum()
+    #                 print(total_sum)
+    #
+    #                 splitted = file.replace(".xlsx", "").split("-")
+    #                 actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
+    #                 print()
+    #                 for k in events2names:
+    #                     if actual_file_name in k:
+    #                         event_name = k
+    #                         break
+    #                 try:
+    #                     rownum = event_name.split("_")[-1]
+    #                     enamedisplay = events2names[event_name] + f"({rownum})"
+    #                     if enamedisplay in categories2events2volumes[category]:
+    #                         categories2events2volumes[category][enamedisplay] += total_sum
+    #                     else:
+    #                         categories2events2volumes[category][enamedisplay] = total_sum
+    #                 except:
+    #                     print(f"{file}")
+    # for subdir, dirs, files in os.walk('Volumesssss/Volume-New (5)/'):
+    # # for subdir, dirs, files in os.walk('Volume-New/'):
+    #     if '-KD' in subdir:
+    #         for file in files:
+    #             if 'E' in file and '2023' in file:
+    #                 df = pd.read_excel(os.path.join(subdir, file), sheet_name='weekly')
+    #
+    #                 # category = subdir.split('\\')[0].split('/')[1]
+    #                 category = subdir.split('\\')[0].split('/')[-1]
+    #                 if category not in categories2events2volumes:
+    #                     categories2events2volumes[category] = {}
+    #                 comment_cols = [col for col in df.columns if "Comments" in col]
+    #                 total_sum = 0
+    #                 for col in comment_cols:
+    #                     total_sum += df[col].fillna(0).sum()
+    #                 print(total_sum)
+    #
+    #                 splitted = file.replace(".xlsx", "").split("-")
+    #                 actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
+    #                 print()
+    #                 for k in events2names:
+    #                     if actual_file_name in k:
+    #                         event_name = k
+    #                         break
+    #                 try:
+    #                     rownum = event_name.split("_")[-1]
+    #                     enamedisplay = events2names[event_name] + f"({rownum})"
+    #                     if enamedisplay in categories2events2volumes[category]:
+    #                         categories2events2volumes[category][enamedisplay] += total_sum
+    #                     else:
+    #                         categories2events2volumes[category][enamedisplay] = total_sum
+    #                 except:
+    #                     print(f"{file}")
+    #
+    #
+    # # HIYAMMMMMMMMMMM
+    # for k in events2names:
+    #     category = k.split("_")[1]
+    #     rownum = k.split("_")[-1]
+    #     if str(events2names[k]) in ["nan", ""]:
+    #         continue
+    #     val = str(events2names[k]) + f"({rownum})"
+    #     if val not in categories2events2volumes[category]:
+    #         categories2events2volumes[category][str(val)] = 0
+    #
+    # for category in categories2events2volumes:
+    #
+    #     event2comments = categories2events2volumes[category]
+    #     # Sort by total comments
+    #     sorted_events = sorted(event2comments.items(), key=lambda x: x[1], reverse=True)
+    #
+    #     event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
+    #     comment_counts = [count for _, count in sorted_events]
+    #
+    #     # Arabic reshaped + sorted labels
+    #     event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
+    #     comment_counts = [count for _, count in sorted_events]
+    #
+    #     # Set plot size dynamically
+    #     fig_width = max(8, len(event_names) * 0.3)
+    #     plt.figure(figsize=(fig_width, 6))
+    #
+    #     # Plot vertical bars
+    #     plt.bar(event_names, comment_counts, color='skyblue')
+    #
+    #     plt.xticks(rotation=90, ha='center')  # Rotate Arabic labels for readability
+    #     plt.ylabel("Total number of comments", fontweight='bold')  # Arabic-friendly label
+    #     # plt.title(get_display(arabic_reshaper.reshape(f"عدد التعليقات لكل حدث - {categories2arabic[category]}")),
+    #     #           fontweight='bold')
+    #     plt.tight_layout()
+    #
+    #     # Save
+    #     plt.savefig(os.path.join(save_dirs3, f'{category}.png'), dpi=600)
+    #     plt.close()
 
 
 
