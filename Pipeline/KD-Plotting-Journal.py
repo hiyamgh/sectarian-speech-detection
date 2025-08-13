@@ -742,120 +742,120 @@ if __name__ == '__main__':
     ################
     ########################################################### BAR PLTOS...............................................
 
-    # import matplotlib.pyplot as plt
-    #
-    # save_dirs3 = '../paper_plots_stephanie/volume_bar_plots/'
-    # mkdir(save_dirs3)
-    # events2names = dict(zip(df_events["EventIDRowwise"], df_events["KeywordEventDescriptionEN"]))
-    # del events2names[np.nan]
-    # categories2events2volumes = {}
-    # for subdir, dirs, files in os.walk('Volumesssss/Volume-FACEBOOK-Updated/'):
-    # # for subdir, dirs, files in os.walk('Volume-New/'):
-    #     if '-KD' in subdir:
-    #         for file in files:
-    #             if 'E' in file and '2023' in file:
-    #                 df = pd.read_excel(os.path.join(subdir, file), sheet_name='original')
-    #                 print(file)
-    #                 # category = subdir.split('\\')[0].split('/')[1]
-    #                 category = subdir.split('\\')[0].split('/')[-1]
-    #                 if category not in categories2events2volumes:
-    #                     categories2events2volumes[category] = {}
-    #                 comment_cols = [col for col in df.columns if "Comments" in col]
-    #                 total_sum = 0
-    #                 for col in comment_cols:
-    #                     total_sum += df[col].fillna(0).sum()
-    #                 print(total_sum)
-    #
-    #                 splitted = file.replace(".xlsx", "").split("-")
-    #                 actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
-    #                 print()
-    #                 for k in events2names:
-    #                     if actual_file_name in k:
-    #                         event_name = k
-    #                         break
-    #                 try:
-    #                     rownum = event_name.split("_")[-1]
-    #                     enamedisplay = events2names[event_name] + f"({rownum})"
-    #                     if enamedisplay in categories2events2volumes[category]:
-    #                         categories2events2volumes[category][enamedisplay] += total_sum
-    #                     else:
-    #                         categories2events2volumes[category][enamedisplay] = total_sum
-    #                 except:
-    #                     print(f"{file}")
-    # for subdir, dirs, files in os.walk('Volumesssss/Volume-New (5)/'):
-    # # for subdir, dirs, files in os.walk('Volume-New/'):
-    #     if '-KD' in subdir:
-    #         for file in files:
-    #             if 'E' in file and '2023' in file:
-    #                 df = pd.read_excel(os.path.join(subdir, file), sheet_name='weekly')
-    #
-    #                 # category = subdir.split('\\')[0].split('/')[1]
-    #                 category = subdir.split('\\')[0].split('/')[-1]
-    #                 if category not in categories2events2volumes:
-    #                     categories2events2volumes[category] = {}
-    #                 comment_cols = [col for col in df.columns if "Comments" in col]
-    #                 total_sum = 0
-    #                 for col in comment_cols:
-    #                     total_sum += df[col].fillna(0).sum()
-    #                 print(total_sum)
-    #
-    #                 splitted = file.replace(".xlsx", "").split("-")
-    #                 actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
-    #                 print()
-    #                 for k in events2names:
-    #                     if actual_file_name in k:
-    #                         event_name = k
-    #                         break
-    #                 try:
-    #                     rownum = event_name.split("_")[-1]
-    #                     enamedisplay = events2names[event_name] + f"({rownum})"
-    #                     if enamedisplay in categories2events2volumes[category]:
-    #                         categories2events2volumes[category][enamedisplay] += total_sum
-    #                     else:
-    #                         categories2events2volumes[category][enamedisplay] = total_sum
-    #                 except:
-    #                     print(f"{file}")
-    #
-    #
-    # # HIYAMMMMMMMMMMM
-    # for k in events2names:
-    #     category = k.split("_")[1]
-    #     rownum = k.split("_")[-1]
-    #     if str(events2names[k]) in ["nan", ""]:
-    #         continue
-    #     val = str(events2names[k]) + f"({rownum})"
-    #     if val not in categories2events2volumes[category]:
-    #         categories2events2volumes[category][str(val)] = 0
-    #
-    # for category in categories2events2volumes:
-    #
-    #     event2comments = categories2events2volumes[category]
-    #     # Sort by total comments
-    #     sorted_events = sorted(event2comments.items(), key=lambda x: x[1], reverse=True)
-    #
-    #     event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
-    #     comment_counts = [count for _, count in sorted_events]
-    #
-    #     # Arabic reshaped + sorted labels
-    #     event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
-    #     comment_counts = [count for _, count in sorted_events]
-    #
-    #     # Set plot size dynamically
-    #     fig_width = max(8, len(event_names) * 0.3)
-    #     plt.figure(figsize=(fig_width, 6))
-    #
-    #     # Plot vertical bars
-    #     plt.bar(event_names, comment_counts, color='skyblue')
-    #
-    #     plt.xticks(rotation=90, ha='center')  # Rotate Arabic labels for readability
-    #     plt.ylabel("Total number of comments", fontweight='bold')  # Arabic-friendly label
-    #     # plt.title(get_display(arabic_reshaper.reshape(f"عدد التعليقات لكل حدث - {categories2arabic[category]}")),
-    #     #           fontweight='bold')
-    #     plt.tight_layout()
-    #
-    #     # Save
-    #     plt.savefig(os.path.join(save_dirs3, f'{category}.png'), dpi=600)
-    #     plt.close()
+    import matplotlib.pyplot as plt
+
+    save_dirs3 = '../paper_plots_stephanie/volume_bar_plots/'
+    mkdir(save_dirs3)
+    events2names = dict(zip(df_events["EventIDRowwise"], df_events["KeywordEventDescriptionEN"]))
+    del events2names[np.nan]
+    categories2events2volumes = {}
+    for subdir, dirs, files in os.walk('Volumesssss/Volume-FACEBOOK-Updated/'):
+    # for subdir, dirs, files in os.walk('Volume-New/'):
+        if '-KD' in subdir:
+            for file in files:
+                if 'E' in file and '2023' in file:
+                    df = pd.read_excel(os.path.join(subdir, file), sheet_name='original')
+                    print(file)
+                    # category = subdir.split('\\')[0].split('/')[1]
+                    category = subdir.split('\\')[0].split('/')[-1]
+                    if category not in categories2events2volumes:
+                        categories2events2volumes[category] = {}
+                    comment_cols = [col for col in df.columns if "Comments" in col]
+                    total_sum = 0
+                    for col in comment_cols:
+                        total_sum += df[col].fillna(0).sum()
+                    print(total_sum)
+
+                    splitted = file.replace(".xlsx", "").split("-")
+                    actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
+                    print()
+                    for k in events2names:
+                        if actual_file_name in k:
+                            event_name = k
+                            break
+                    try:
+                        rownum = event_name.split("_")[-1]
+                        enamedisplay = events2names[event_name] + f"({rownum})"
+                        if enamedisplay in categories2events2volumes[category]:
+                            categories2events2volumes[category][enamedisplay] += total_sum
+                        else:
+                            categories2events2volumes[category][enamedisplay] = total_sum
+                    except:
+                        print(f"{file}")
+    for subdir, dirs, files in os.walk('Volumesssss/Volume-New (5)/'):
+    # for subdir, dirs, files in os.walk('Volume-New/'):
+        if '-KD' in subdir:
+            for file in files:
+                if 'E' in file and '2023' in file:
+                    df = pd.read_excel(os.path.join(subdir, file), sheet_name='weekly')
+
+                    # category = subdir.split('\\')[0].split('/')[1]
+                    category = subdir.split('\\')[0].split('/')[-1]
+                    if category not in categories2events2volumes:
+                        categories2events2volumes[category] = {}
+                    comment_cols = [col for col in df.columns if "Comments" in col]
+                    total_sum = 0
+                    for col in comment_cols:
+                        total_sum += df[col].fillna(0).sum()
+                    print(total_sum)
+
+                    splitted = file.replace(".xlsx", "").split("-")
+                    actual_file_name = "E" + splitted[2] + "-" + splitted[1] + "-" + splitted[0].replace("E", "") + "_" + category
+                    print()
+                    for k in events2names:
+                        if actual_file_name in k:
+                            event_name = k
+                            break
+                    try:
+                        rownum = event_name.split("_")[-1]
+                        enamedisplay = events2names[event_name] + f"({rownum})"
+                        if enamedisplay in categories2events2volumes[category]:
+                            categories2events2volumes[category][enamedisplay] += total_sum
+                        else:
+                            categories2events2volumes[category][enamedisplay] = total_sum
+                    except:
+                        print(f"{file}")
+
+
+    # HIYAMMMMMMMMMMM
+    for k in events2names:
+        category = k.split("_")[1]
+        rownum = k.split("_")[-1]
+        if str(events2names[k]) in ["nan", ""]:
+            continue
+        val = str(events2names[k]) + f"({rownum})"
+        if val not in categories2events2volumes[category]:
+            categories2events2volumes[category][str(val)] = 0
+
+    for category in categories2events2volumes:
+
+        event2comments = categories2events2volumes[category]
+        # Sort by total comments
+        sorted_events = sorted(event2comments.items(), key=lambda x: x[1], reverse=True)
+
+        event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
+        comment_counts = [count for _, count in sorted_events]
+
+        # Arabic reshaped + sorted labels
+        event_names = [get_display(arabic_reshaper.reshape(event)) for event, _ in sorted_events]
+        comment_counts = [count for _, count in sorted_events]
+
+        # Set plot size dynamically
+        fig_width = max(8, len(event_names) * 0.3)
+        plt.figure(figsize=(fig_width, 6))
+
+        # Plot vertical bars
+        plt.bar(event_names, comment_counts, color='skyblue')
+
+        plt.xticks(rotation=90, ha='center')  # Rotate Arabic labels for readability
+        plt.ylabel("Total number of comments", fontweight='bold')  # Arabic-friendly label
+        # plt.title(get_display(arabic_reshaper.reshape(f"عدد التعليقات لكل حدث - {categories2arabic[category]}")),
+        #           fontweight='bold')
+        plt.tight_layout()
+
+        # Save
+        plt.savefig(os.path.join(save_dirs3, f'{category}.png'), dpi=600)
+        plt.close()
 
 
 
